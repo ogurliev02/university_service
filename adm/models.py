@@ -7,13 +7,13 @@ from django.db import models
 
 class University(models.Model):
     title = models.CharField(verbose_name="Название университета", max_length=255)
-    disciplines = ArrayField(models.CharField(max_length=155), verbose_name="Список факультетов", null=True)
+    disciplines = ArrayField(models.CharField(max_length=155), verbose_name="Список факультетов", null=True, blank=True)
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    university = models.ForeignKey(University, on_delete=models.SET_NULL, null=True, related_name='user_university')
-    group_number = models.CharField(verbose_name="Номер группы", max_length=255, null=True)
+    university = models.ForeignKey(University, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_university')
+    group_number = models.CharField(verbose_name="Номер группы", max_length=255, blank=True)
 
 
 class Category(models.Model):
@@ -22,7 +22,7 @@ class Category(models.Model):
 
 
 class Project(models.Model):
-    users = ArrayField(models.IntegerField(), verbose_name="Список заинтересованных лиц")
+    users = ArrayField(models.CharField(max_length=255), verbose_name="Список заинтересованных лиц", blank=True)
     project_manager = models.ForeignKey(Profile, on_delete=models.SET_NULL, verbose_name="Проджект-менеджер", null=True,
                                         related_name='project_project_manager')
     tester = models.ForeignKey(Profile, on_delete=models.SET_NULL, verbose_name="Тестировщик", null=True,
@@ -40,11 +40,12 @@ class Project(models.Model):
     goal = models.CharField(verbose_name="Цель проекта", max_length=255, null=False)
     start_date = models.DateTimeField(verbose_name="Дата начала проекта", default=datetime.datetime.utcnow())
     deadline_date = models.DateTimeField(verbose_name="Дедлайн проекта", null=False)
-    end_date = models.DateTimeField(verbose_name="Дата конеца проекта", null=True)
+    end_date = models.DateTimeField(verbose_name="Дата конеца проекта", null=True, blank=True)
     university = models.ForeignKey(University, on_delete=models.SET_NULL, verbose_name="Университет", null=True,
                                    related_name='project_university')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name="Категория проекта", null=True,
                                  related_name='project_category')
+    waiting_approve = ArrayField(models.CharField(max_length=255), verbose_name="Ждут подтвержения на участие", blank=True)
 
 
 class MarkChoices(models.IntegerChoices):
